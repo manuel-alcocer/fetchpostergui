@@ -14,6 +14,27 @@ import imagesize
 mainwindow = '/home/manuel/fetchpostergui/mainmenu.ui'
 form_class = uic.loadUiType(mainwindow)[0]
 
+class tmdbrequest:
+    def __init__(self):
+        self.api_key = environ['TMDBAPI']
+        # Available poster sizes: 'w100', 'w500', 'original'
+        # See TheMovieDb API for more info
+        self.poster_preview_path = '/home/manuel/.tmp'
+        self.poster_preview_size = 'original'
+
+        self.poster_download_path = '/home/manuel/Pictures'
+        self.poster_download_size = 'original'
+
+    def MakeRequest(self, query):
+        payload = { 'api_key' : self.api_key, 'query' : query, 'language' : 'es' }
+        self.req = requests.get('http://api.themoviedb.org/3/search/movie', params=payload)
+        self.Searching = False
+        if self.req.status_code == 200:
+            self.reqtext = loads(self.req.text)
+        else:
+            # if request fails do whatever
+            pass
+
 class MyWindowClass(QtGui.QMainWindow, form_class):
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)

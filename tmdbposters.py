@@ -19,8 +19,8 @@ class MyWindowClass(QtGui.QMainWindow, form_class):
         self.setupUi(self)
         self.btnSearch.clicked.connect(self.btnSearch_clkd)
         self.btnDownload.clicked.connect(self.btnDownload_clkd)
-        self.btnRefresh.clicked.connect(self.btnRefresh_clkd)
         self.btnExit.clicked.connect(self.btnExit_clkd)
+        self.titleList.currentIndexChanged.connect(self.RefreshForm)
 
         self.api_key = environ['TMDBAPI']
 
@@ -39,7 +39,7 @@ class MyWindowClass(QtGui.QMainWindow, form_class):
         self.MakeRequest()
         self.InsertData()
 
-    def btnRefresh_clkd(self):
+    def RefreshForm(self):
         if self.titleList.count() > 0:
             self.SetFormValues(self.titleList.currentIndex())
 

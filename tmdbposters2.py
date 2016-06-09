@@ -105,7 +105,7 @@ class MyWindowClass(QtGui.QMainWindow, form_class):
     def UpdateProgressBar(self, value):
         actual = self.progressBar.value()
         value = int(value)
-        self.progressBar.setValue((actual+value)%101)
+        self.progressBar.setValue((actual+value)%100)
 
     def btnSearch_clkd(self):
         self.MyRequest = RequestThread()
@@ -120,10 +120,12 @@ class MyWindowClass(QtGui.QMainWindow, form_class):
 
     def RefreshForm(self):
         if self.titleList.count() > 0:
-            self.SetFormValues(self.titleList.currentIndex())
+            self.RequestProgressBar()
+            self.SetFormValues()
 
     def ShowPreview(self):
         self.MyReqProgressBar.running = False
+        self.MyReqProgressBar.quit()
         scene = QtGui.QGraphicsScene()
         scene.addPixmap(QtGui.QPixmap('%s/%s.jpg' % (self.MyPreviewDownload.poster_preview_path,self.MyPreviewDownload.title)))
         self.posterView.setScene(scene)
@@ -132,18 +134,15 @@ class MyWindowClass(QtGui.QMainWindow, form_class):
 
 
     def InsertData(self):
-        self.StopRequest()
-        self.MyRequest.quit()
-        self.MyRequest.wait()
         self.titleList.clear()
         titleList = []
         for film in self.MyRequest.reqtext['results']:
             titleList.append(film['title'])
         self.titleList.addItems(titleList)
-        self.SetFormValues(self.titleList.currentIndex())
+        self.SetFormValues()
 
-    def SetFormValues(self, index):
-        self.MyReqProgressBar.running = False
+    def SetFormValues(self):
+        index = self.titleList.currentIndex()
         film = self.MyRequest.reqtext['results'][index]
 
         originalTitle = 'No hay título original'
@@ -169,7 +168,6 @@ class MyWindowClass(QtGui.QMainWindow, form_class):
             self.MyPreviewDownload.title = film['title']
             self.MyPreviewDownload.start()
             self.connect(self.MyPreviewDownload, QtCore.SIGNAL('finished()'), self.ShowPreview)
-            self.RequestProgressBar()
 
     def btnDownload_clkd(self):
         self.MyDownload = DownloadThread()
@@ -181,9 +179,7 @@ class MyWindowClass(QtGui.QMainWindow, form_class):
         self.RequestProgressBar()
 
     def DownloadComplete(self):
-        self.MyDownload.quit()
-        self.MyDownload.wait()
-        self.StopProgressBar()
+        self.MyReqProgressBar.running = False
 
 app = QtGui.QApplication(argv)
 MyWindow = MyWindowClass(None)

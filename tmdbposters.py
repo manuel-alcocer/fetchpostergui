@@ -11,7 +11,8 @@ import requests
 
 import imagesize
 
-form_class = uic.loadUiType("mainmenu.ui")[0]
+mainwindow = '/home/manuel/fetchpostergui/mainmenu.ui'
+form_class = uic.loadUiType(mainwindow)[0]
 
 class MyWindowClass(QtGui.QMainWindow, form_class):
     def __init__(self, parent=None):
@@ -87,7 +88,6 @@ class MyWindowClass(QtGui.QMainWindow, form_class):
     def MakeRequest(self):
         searchtext = str(self.textSearch.toPlainText())
         payload = { 'api_key' : self.api_key, 'query' : searchtext, 'language' : 'es' }
-        print payload
         self.req = requests.get('http://api.themoviedb.org/3/search/movie', params=payload)
         if self.req.status_code == 200:
             self.reqtext = loads(self.req.text)
